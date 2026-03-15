@@ -83,6 +83,7 @@ export class WebSocketService {
     if (this.isPollingActive) return;
     this.isPollingActive = true;
     console.log("📡 Starting HTTP Polling fallback to:", `${this.apiBase}/api/sensors`);
+    console.log("ℹ️ Check browser DevTools network tab if data doesn't appear.");
 
     // Mark as connected so UI shows data, but maybe with a "polling" status
     this.connectionCallbacks.forEach(cb => cb(true));

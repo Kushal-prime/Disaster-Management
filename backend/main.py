@@ -99,9 +99,10 @@ _default_origins = [
     "http://localhost:5173", "http://127.0.0.1:5173",
     "http://localhost:3000", "http://127.0.0.1:3000",
     "http://localhost:3001", "http://127.0.0.1:3001",
+    "https://subtle-jalebi-9468e2.netlify.app",
 ]
 _allowed_origins = os.environ.get("ALLOWED_ORIGINS")
-allowed_origins = _allowed_origins.split(",") if _allowed_origins else _default_origins
+allowed_origins = _allowed_origins.split(",") if _allowed_origins else ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins, allow_credentials=True,
