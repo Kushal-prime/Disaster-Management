@@ -150,6 +150,4 @@ TRINETRA is designed to support geological monitoring and mine safety by:
 
 ---
 
-## License
 
-See repository license file if present.
