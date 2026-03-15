@@ -101,7 +101,8 @@ _default_origins = [
     "http://localhost:3001", "http://127.0.0.1:3001",
     "https://subtle-jalebi-9468e2.netlify.app",
     "https://admirable-dolphin-b671e9.netlify.app",
-    "https://disaster-management-49zrpwgk9-kushal-primes-projects.vercel.app"
+    "https://disaster-management-49zrpwgk9-kushal-primes-projects.vercel.app",
+    "https://agent-69b698ff94a1883--precious-madeleine-ec1e19.netlify.app"
 ]
 _allowed_origins = os.environ.get("ALLOWED_ORIGINS")
 allowed_origins = _allowed_origins.split(",") if _allowed_origins else _default_origins
