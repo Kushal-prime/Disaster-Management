@@ -1,7 +1,0 @@
-# Minimal backend deps for deployment (no PyTorch - ML disabled but API + WebSocket work)
-fastapi==0.110.0
-uvicorn==0.29.0
-python-multipart==0.0.9
-numpy==1.26.4
-joblib==1.4.2
-websockets==12.0
