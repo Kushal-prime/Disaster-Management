@@ -91,6 +91,10 @@ def simulate_weather_forecast(current_readings: dict, steps: int = 5) -> list:
 
 app = FastAPI(title="TRINETRA - Geological Event Monitoring API")
 
+@app.get("/")
+async def root():
+    return {"status": "online", "message": "TRINETRA API is running"}
+
 _default_origins = [
     "http://localhost:5173", "http://127.0.0.1:5173",
     "http://localhost:3000", "http://127.0.0.1:3000",
