@@ -16,7 +16,6 @@ services:
   - type: web
     name: trinetra-web
     runtime: static
-    region: oregon
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: build
