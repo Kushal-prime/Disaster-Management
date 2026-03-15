@@ -100,13 +100,18 @@ _default_origins = [
     "http://localhost:3000", "http://127.0.0.1:3000",
     "http://localhost:3001", "http://127.0.0.1:3001",
     "https://subtle-jalebi-9468e2.netlify.app",
+    "https://admirable-dolphin-b671e9.netlify.app",
+    "https://disaster-management-49zrpwgk9-kushal-primes-projects.vercel.app"
 ]
 _allowed_origins = os.environ.get("ALLOWED_ORIGINS")
-allowed_origins = _allowed_origins.split(",") if _allowed_origins else ["*"]
+allowed_origins = _allowed_origins.split(",") if _allowed_origins else _default_origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins, allow_credentials=True,
-    allow_methods=["*"], allow_headers=["*"],
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"], 
+    allow_headers=["*"],
 )
 
 # ... (All your HTTP endpoints like /api/status, /api/trigger_event, etc. remain exactly the same) ...
