@@ -1,4 +1,0 @@
-# Railway build config: use python -m pip (pip often not on PATH in build image)
-[build]
-builder = "nixpacks"
-buildCommand = "python -m pip install -r requirements.txt"

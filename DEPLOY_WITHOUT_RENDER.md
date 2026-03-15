@@ -11,8 +11,8 @@ Use **Vercel** (frontend) + **Railway** (backend) instead of Render.
 3. Select your repo (e.g. `Kushal-prime/Disaster-Management`).
 4. Railway will add one service. Open it and go to **Settings**:
    - **Root Directory**: set to `backend`
-   - **Build Command**: `python -m pip install -r requirements.txt`
-   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+   - Leave **Build Command** empty (Railpack will use `backend/nixpacks.toml` and install from `requirements.txt`)
+   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT` (or leave empty; Procfile is used)
 5. In **Variables**, add:
    - `ALLOWED_ORIGINS` = `https://your-app.vercel.app` (use your Vercel URL after step 2)
 6. Under **Settings** → **Networking**, click **Generate Domain**. Copy the URL (e.g. `https://trinetra-api-production-xxxx.up.railway.app`).
