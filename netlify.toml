@@ -1,10 +1,7 @@
 [build]
-  base = "backend"
-  command = "pip install -r requirements.txt"
-  publish = "."
-
-[build.environment]
-  PYTHON_VERSION = "3.12"
+  base = "frontend"
+  command = "npm run build"
+  publish = "build"
 
 [[redirects]]
   from = "/*"
