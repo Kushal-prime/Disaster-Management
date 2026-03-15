@@ -6,15 +6,20 @@ export class WebSocketService {
   private static instance: WebSocketService | null = null;
   private socket: WebSocket | null = null;
   private url: string;
+  private apiBase: string;
   private reconnectAttempts = 0;
-  private maxReconnectAttempts = 10;
+  private maxReconnectAttempts = 5;
   private reconnectInterval = 2000;
+  private pollingTimer: any = null;
+  private isPollingActive = false;
 
   private messageCallbacks: MessageCallback[] = [];
   private connectionCallbacks: ConnectionCallback[] = [];
 
   private constructor(url: string) {
     this.url = url;
+    // Derive API base from WebSocket URL (e.g., ws://... -> http://...)
+    this.apiBase = url.replace(/^ws/, "http").replace(/\/ws\/live$/, "");
     this.connect();
   }
 
@@ -24,13 +29,14 @@ export class WebSocketService {
       if (!url) throw new Error("WebSocket URL must be provided for the first instance");
       WebSocketService.instance = new WebSocketService(url);
     } else if (url && WebSocketService.instance.url !== url) {
-      // If URL changes, reconnect
       WebSocketService.instance.changeUrl(url);
     }
     return WebSocketService.instance;
   }
 
   private connect() {
+    this.stopPolling(); // Stop polling if we're trying to connect via WS
+
     try {
       this.socket = new WebSocket(this.url);
     } catch (err) {
@@ -54,9 +60,7 @@ export class WebSocketService {
       }
     };
 
-    this.socket.onerror = () => {
-      // Don't spam console; handled in onclose
-    };
+    this.socket.onerror = () => {};
 
     this.socket.onclose = () => {
       this.connectionCallbacks.forEach(cb => cb(false));
@@ -65,22 +69,59 @@ export class WebSocketService {
     };
   }
 
-private scheduleReconnect() {
-  this.reconnectAttempts++;
-  if (this.reconnectAttempts <= this.maxReconnectAttempts) {
-    setTimeout(() => this.connect(), 2000);
-  } else {
-    console.error("❌ Max WebSocket reconnect attempts reached");
+  private scheduleReconnect() {
+    this.reconnectAttempts++;
+    if (this.reconnectAttempts <= this.maxReconnectAttempts) {
+      setTimeout(() => this.connect(), this.reconnectInterval);
+    } else {
+      console.error("❌ Max WebSocket reconnect attempts reached. Falling back to HTTP Polling...");
+      this.startPolling();
+    }
   }
-}
 
+  private async startPolling() {
+    if (this.isPollingActive) return;
+    this.isPollingActive = true;
+    console.log("📡 Starting HTTP Polling fallback to:", `${this.apiBase}/api/sensors`);
+
+    // Mark as connected so UI shows data, but maybe with a "polling" status
+    this.connectionCallbacks.forEach(cb => cb(true));
+
+    const poll = async () => {
+      if (!this.isPollingActive) return;
+      try {
+        const response = await fetch(`${this.apiBase}/api/sensors`);
+        if (response.ok) {
+          const data = await response.json();
+          this.messageCallbacks.forEach(cb => cb(data));
+        }
+      } catch (err) {
+        console.error("❌ Polling error:", err);
+      }
+      this.pollingTimer = setTimeout(poll, 1000); // Poll every 1 second
+    };
+
+    poll();
+  }
+
+  private stopPolling() {
+    this.isPollingActive = false;
+    if (this.pollingTimer) {
+      clearTimeout(this.pollingTimer);
+      this.pollingTimer = null;
+    }
+  }
 
   // Change URL dynamically
   public changeUrl(newUrl: string) {
     if (this.url === newUrl) return;
     console.log("🔄 Changing WebSocket URL to:", newUrl);
     this.url = newUrl;
+    this.apiBase = newUrl.replace(/^ws/, "http").replace(/\/ws\/live$/, "");
+    this.reconnectAttempts = 0;
     this.socket?.close();
+    this.stopPolling();
+    this.connect();
   }
 
   public send(msg: any) {
@@ -108,6 +149,6 @@ private scheduleReconnect() {
   }
 
   public isConnected(): boolean {
-    return this.socket?.readyState === WebSocket.OPEN;
+    return this.socket?.readyState === WebSocket.OPEN || this.isPollingActive;
   }
 }
