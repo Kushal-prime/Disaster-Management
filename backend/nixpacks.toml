@@ -1,3 +1,0 @@
-# Ensure Railpack/Nixpacks uses the Python provider (installs from requirements.txt)
-# https://nixpacks.com/docs/configuration/file
-providers = ["python"]
