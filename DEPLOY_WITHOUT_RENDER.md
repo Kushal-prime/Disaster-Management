@@ -11,7 +11,7 @@ Use **Vercel** (frontend) + **Railway** (backend) instead of Render.
 3. Select your repo (e.g. `Kushal-prime/Disaster-Management`).
 4. Railway will add one service. Open it and go to **Settings**:
    - **Root Directory**: set to `backend`
-   - **Build Command**: `pip install -r requirements-render.txt`
+   - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
 5. In **Variables**, add:
    - `ALLOWED_ORIGINS` = `https://your-app.vercel.app` (use your Vercel URL after step 2)

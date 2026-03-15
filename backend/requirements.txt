@@ -1,14 +1,7 @@
+# Backend dependencies (minimal for deployment - no PyTorch; API + WebSocket work)
 fastapi==0.110.0
 uvicorn==0.29.0
 python-multipart==0.0.9
-matplotlib==3.8.4
-pandas==2.2.2
 numpy==1.26.4
-scikit-learn==1.4.1.post1
-seaborn==0.13.2
-torch>=2.2.0
-torchvision>=0.17.0
-torchaudio>=2.2.0
-tqdm==4.66.1
 joblib==1.4.2
 websockets==12.0
