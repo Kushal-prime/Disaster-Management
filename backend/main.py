@@ -1,7 +1,6 @@
 # backend/main.py
 import os
 import sys
-import torch
 import numpy as np
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.responses import JSONResponse
@@ -17,12 +16,20 @@ if BASE_DIR not in sys.path:
 
 from sensors import sensors
 from sensors.sensors import global_sensor_state
-from ml_model.sensors.cnn_model import CNNModel
+
+# Optional: torch and CNN model (backend works without them)
+torch = None
+CNNModel = None
+try:
+    import torch
+    from ml_model.sensors.cnn_model import CNNModel
+except (ImportError, OSError):
+    print("PyTorch/CNN not available. ML predictions disabled.")
 
 try:
     from ml_model.weather.infer_weather import WeatherForecaster, WEATHER_FEATURES, WEATHER_WINDOW_SIZE
-except ImportError:
-    print("⚠️ Weather model files not found. Weather forecasting disabled.")
+except (ImportError, OSError):
+    print("Weather model files not found. Weather forecasting disabled.")
     WeatherForecaster = lambda: type('obj', (object,), {'is_ready': False})
     WEATHER_FEATURES = []
     WEATHER_WINDOW_SIZE = 50
@@ -34,11 +41,11 @@ CNN_MODEL_PATH = os.path.join(BASE_DIR, "ml_model", "sensors", "best_cnn_model.p
 CNN_SCALER_PATH = os.path.join(BASE_DIR, "ml_model", "sensors", "scaler.pkl")
 
 weather_data_buffer = deque(maxlen=WEATHER_WINDOW_SIZE)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if torch else None
 
-# Load CNN model & scaler
+# Load CNN model & scaler (only when torch is available)
 cnn_model, cnn_scaler = None, None
-if os.path.exists(CNN_MODEL_PATH):
+if torch and CNNModel and os.path.exists(CNN_MODEL_PATH):
     cnn_model = CNNModel(num_features=CNN_NUM_FEATURES, num_classes=2)
     try:
         dummy_input = torch.randn(1, CNN_WINDOW_SIZE, CNN_NUM_FEATURES)
@@ -48,14 +55,16 @@ if os.path.exists(CNN_MODEL_PATH):
     cnn_model.load_state_dict(torch.load(CNN_MODEL_PATH, map_location=device))
     cnn_model.to(device)
     cnn_model.eval()
-    print("✅ Rockfall CNN model loaded.")
+    print("Rockfall CNN model loaded.")
     if os.path.exists(CNN_SCALER_PATH):
         cnn_scaler = joblib.load(CNN_SCALER_PATH)
-        print("✅ Rockfall CNN scaler loaded.")
+        print("Rockfall CNN scaler loaded.")
     else:
-        print("⚠️ CNN scaler not found.")
+        print("CNN scaler not found.")
+elif not torch:
+    print("Rockfall CNN disabled (torch not installed).")
 else:
-    print("⚠️ Rockfall CNN model not found.")
+    print("Rockfall CNN model not found.")
 
 weather_forecaster = WeatherForecaster()
 
@@ -82,10 +91,13 @@ def simulate_weather_forecast(current_readings: dict, steps: int = 5) -> list:
 
 app = FastAPI(title="TRINETRA - Geological Event Monitoring API")
 
-allowed_origins = [
+_default_origins = [
     "http://localhost:5173", "http://127.0.0.1:5173",
-    "http://localhost:3000", "http://127.0.0.1:3000"
+    "http://localhost:3000", "http://127.0.0.1:3000",
+    "http://localhost:3001", "http://127.0.0.1:3001",
 ]
+_allowed_origins = os.environ.get("ALLOWED_ORIGINS")
+allowed_origins = _allowed_origins.split(",") if _allowed_origins else _default_origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins, allow_credentials=True,
@@ -126,8 +138,8 @@ async def get_alert_status():
             elif global_sensor_state["phase"] == "normal":
                 return {"mode": "safe", "location": "TRINETRA Monitoring Zone"}
         
-        # Check ML prediction for normal operation
-        if len(cnn_data_buffer) == CNN_WINDOW_SIZE and cnn_model and cnn_scaler:
+        # Check ML prediction for normal operation (only when torch/CNN available)
+        if torch and len(cnn_data_buffer) == CNN_WINDOW_SIZE and cnn_model and cnn_scaler and device is not None:
             window_data = np.array(cnn_data_buffer)
             scaled_window = cnn_scaler.transform(window_data)
             input_tensor = torch.tensor(scaled_window, dtype=torch.float32).unsqueeze(0).to(device)
@@ -168,7 +180,7 @@ async def websocket_live(ws: WebSocket):
             cnn_features = [readings[k] for k in ["accelerometer", "geophone", "seismometer", "moisture_sensor", "piezometer", "crack_sensor", "inclinometer", "extensometer", "rain_sensor_mmhr", "temperature_celsius", "humidity_percent"]]
             cnn_data_buffer.append(cnn_features)
             prediction_label, confidence_val = None, 0.0
-            if cnn_model and cnn_scaler and len(cnn_data_buffer) == CNN_WINDOW_SIZE:
+            if torch and cnn_model and cnn_scaler and device is not None and len(cnn_data_buffer) == CNN_WINDOW_SIZE:
                 window_data = np.array(cnn_data_buffer)
                 scaled_window = cnn_scaler.transform(window_data)
                 input_tensor = torch.tensor(scaled_window, dtype=torch.float32).unsqueeze(0).to(device)

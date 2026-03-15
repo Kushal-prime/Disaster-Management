@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { API_BASE } from '../config';
 
 // The data structure we expect from the GET /alert endpoint
 type AlertStatus = {
@@ -17,7 +18,7 @@ const RiskIndicator: React.FC = () => {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/alert');
+        const response = await fetch(`${API_BASE}/alert`);
         if (!response.ok) throw new Error('Could not connect to the alert system.');
         const data: AlertStatus = await response.json();
         setAlertStatus(data);

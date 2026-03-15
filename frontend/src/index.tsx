@@ -7,12 +7,11 @@ import "./index.css";
 // Updated WebSocket + Redux Provider
 import { WebSocketStoreProvider } from "./providers/WebSocketProvider";
 
-// Replace this with your actual backend WebSocket URL
-const WEBSOCKET_URL = "ws://localhost:8000/ws/live";
+import { WS_URL } from "./config";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <WebSocketStoreProvider initialUrl={WEBSOCKET_URL}>
+    <WebSocketStoreProvider initialUrl={WS_URL}>
       <App />
     </WebSocketStoreProvider>
   </React.StrictMode>

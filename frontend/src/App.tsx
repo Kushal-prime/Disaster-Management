@@ -12,6 +12,7 @@ import RiskIndicator from "./components/RiskIndicator";
 import EventLog from "./components/EventLog";
 import Footer from "./components/Footer";
 import AlertButton from "./components/AlertButton";
+import { API_BASE } from "./config";
 
 function App() {
   const [alertActive, setAlertActive] = useState(false);
@@ -22,7 +23,7 @@ function App() {
     setAlertActive(true);
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/trigger_event/${eventType}`, {
+      const response = await fetch(`${API_BASE}/api/trigger_event/${eventType}`, {
         method: 'POST',
       });
       if (!response.ok) {
