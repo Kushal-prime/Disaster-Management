@@ -148,6 +148,6 @@ TRINETRA is designed to support geological monitoring and mine safety by:
 3. Visualizing trends and live data for operators
 4. Supporting risk assessment and event simulation for training and demos
 
----
+--- project Link https://69b6cff62578b300082c661a--precious-madeleine-ec1e19.netlify.app/
 
 
