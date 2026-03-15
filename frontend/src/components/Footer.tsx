@@ -20,10 +20,10 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-base font-semibold text-white tracking-wider uppercase mb-4">Features</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">Real-time Monitoring</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Predictive Analytics</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Weather Risk AI</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Early Warning System</a></li>
+              <li><a href="#monitoring" className="hover:text-white transition-colors">Real-time Monitoring</a></li>
+              <li><a href="#analytics" className="hover:text-white transition-colors">Predictive Analytics</a></li>
+              <li><a href="#ai" className="hover:text-white transition-colors">Weather Risk AI</a></li>
+              <li><a href="#warning" className="hover:text-white transition-colors">Early Warning System</a></li>
             </ul>
           </div>
 
@@ -36,9 +36,9 @@ const Footer: React.FC = () => {
             &copy; {new Date().getFullYear()} Smart India Hackathon. All Rights Reserved.
           </p>
           <div className="flex space-x-6 mt-4 sm:mt-0">
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">Twitter</a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">GitHub</a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">LinkedIn</a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">Twitter</a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">GitHub</a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">LinkedIn</a>
           </div>
         </div>
 

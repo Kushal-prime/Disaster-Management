@@ -29,7 +29,7 @@ const ImageModel: React.FC<ImageModelProps> = () => { // Removed triggerAlert fr
         {/* Placeholder image for under development */}
         <img
           src="/images/placeholder-dev.jpg" // You might need to create a placeholder image, e.g., in public/images
-          alt="Image Model Under Development"
+          alt="Satellite feed placeholder showing development status"
           className="w-full h-64 object-cover rounded-md bg-gray-200 flex items-center justify-center text-gray-500"
         />
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 text-white text-xl font-bold rounded-md">

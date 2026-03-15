@@ -44,7 +44,7 @@ const SENSOR_GROUPS = {
 };
 
 const SensorGraphs: React.FC = () => {
-  const { data, isConnected } = useWebSocket<SensorReadings>();
+  const { data } = useWebSocket<SensorReadings>();
   const [timeData, setTimeData] = useState<number[]>([]);
   const [sensorData, setSensorData] = useState<{[key: string]: number[]}>({});
   const [labelData, setLabelData] = useState<number[]>([]);
